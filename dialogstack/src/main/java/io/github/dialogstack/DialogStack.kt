@@ -9,6 +9,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.PriorityQueue
 
+/**
+ * A priority-based dialog management library for Android.
+ *
+ * **Important**: DialogStack should NOT be used as a singleton.
+ * Each component should create its own instance to avoid memory leaks.
+ * Register with Koin using `factoryOf(::DialogStack)` instead of `singleOf(::DialogStack)`.
+ */
 class DialogStack {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default.limitedParallelism(1))
@@ -30,6 +37,9 @@ class DialogStack {
 
     fun pop() {
         scope.launch {
+            if (queue.isEmpty()){
+                return@launch
+            }
             queue.poll()
             _dialogState.value = queue.peek()?.item
         }

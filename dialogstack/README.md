@@ -13,6 +13,27 @@ A lightweight, priority-based dialog management library for Android. Manage dial
 - **StateFlow Integration**: Observe dialog state changes reactively
 - **Minimal Dependencies**: Only depends on kotlinx-coroutines-core
 
+## Important Note
+
+**DialogStack should NOT be used as a singleton.** Each component should create its own instance to avoid memory leaks and ensure proper lifecycle management.
+
+```kotlin
+// ✅ Correct - Register as factory with Koin
+val appModule = module {
+    factoryOf(::DialogStack) // 每次注入创建新实例
+}
+
+// ✅ Correct - Create instance directly
+class MyViewModel(
+    private val dialogStack: DialogStack // 通过 factory 注入
+) : ViewModel()
+
+// ❌ Wrong - Singleton usage causes memory leaks
+val appModule = module {
+    singleOf(::DialogStack) // 不要使用单例!
+}
+```
+
 ## Installation
 
 ### Gradle
