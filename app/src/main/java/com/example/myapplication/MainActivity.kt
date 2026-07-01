@@ -19,10 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.dialogstack.DialogItem
-import com.example.dialogstack.DialogStack
+import com.example.myapplication.dialog.FirstDialog
+import com.example.myapplication.dialog.SecondDialog
+import com.example.myapplication.dialog.ThirdDialog
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.example.myapplication.viewmodel.MainViewModel
+import io.github.dialogstack.DialogStack
 import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
@@ -37,14 +39,38 @@ class MainActivity : ComponentActivity() {
 
                     currentDialog?.let { entry ->
                         when (entry) {
-                            is AlertDialogItem -> {
+                            is FirstDialog -> {
                                 AlertDialog(
                                     onDismissRequest = { viewModel.popDialog() },
-                                    title = { Text(entry.title) },
-                                    text = { Text(entry.message) },
+                                    title = { Text("第一个对话框") },
+                                    text = { Text("这是第一个对话框，默认优先级") },
                                     confirmButton = {
                                         Button(onClick = { viewModel.popDialog() }) {
                                             Text("确定")
+                                        }
+                                    }
+                                )
+                            }
+                            is SecondDialog -> {
+                                AlertDialog(
+                                    onDismissRequest = { viewModel.popDialog() },
+                                    title = { Text("第二个对话框") },
+                                    text = { Text("这是第二个对话框，高优先级") },
+                                    confirmButton = {
+                                        Button(onClick = { viewModel.popDialog() }) {
+                                            Text("确认")
+                                        }
+                                    }
+                                )
+                            }
+                            is ThirdDialog -> {
+                                AlertDialog(
+                                    onDismissRequest = { viewModel.popDialog() },
+                                    title = { Text("第三个对话框") },
+                                    text = { Text("这是第三个对话框，低优先级") },
+                                    confirmButton = {
+                                        Button(onClick = { viewModel.popDialog() }) {
+                                            Text("好的")
                                         }
                                     }
                                 )
@@ -55,21 +81,24 @@ class MainActivity : ComponentActivity() {
                     Greeting(
                         name = "Android",
                         modifier = Modifier.padding(innerPadding),
-                        onShowAlert = {
+                        onFirstDialog = {
                             viewModel.pushDialog(
-                                AlertDialogItem(
-                                    title = "普通提示",
-                                    message = "这是一个普通优先级的对话框",
+                                FirstDialog(
                                     priority = DialogStack.DEFAULT_PRIORITY
                                 )
                             )
                         },
-                        onShowHighPriority = {
+                        onSecondDialog = {
                             viewModel.pushDialog(
-                                AlertDialogItem(
-                                    title = "高优先级",
-                                    message = "这是一个高优先级的对话框，会优先显示",
+                                SecondDialog(
                                     priority = DialogStack.HIGH_PRIORITY
+                                )
+                            )
+                        },
+                        onThirdDialog = {
+                            viewModel.pushDialog(
+                                ThirdDialog(
+                                    priority = DialogStack.LOW_PRIORITY
                                 )
                             )
                         },
@@ -83,18 +112,13 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-data class AlertDialogItem(
-    val title: String,
-    val message: String,
-    override val priority: Int
-) : DialogItem
-
 @Composable
 fun Greeting(
     name: String,
     modifier: Modifier = Modifier,
-    onShowAlert: () -> Unit = {},
-    onShowHighPriority: () -> Unit = {},
+    onFirstDialog: () -> Unit = {},
+    onSecondDialog: () -> Unit = {},
+    onThirdDialog: () -> Unit = {},
     onClear: () -> Unit = {}
 ) {
     Column(
@@ -103,11 +127,14 @@ fun Greeting(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(text = "Hello $name!")
-        Button(onClick = onShowAlert, modifier = Modifier.padding(top = 16.dp)) {
-            Text("显示普通对话框")
+        Button(onClick = onFirstDialog, modifier = Modifier.padding(top = 16.dp)) {
+            Text("显示第一个对话框")
         }
-        Button(onClick = onShowHighPriority, modifier = Modifier.padding(top = 8.dp)) {
-            Text("显示高优先级对话框")
+        Button(onClick = onSecondDialog, modifier = Modifier.padding(top = 8.dp)) {
+            Text("显示第二个对话框")
+        }
+        Button(onClick = onThirdDialog, modifier = Modifier.padding(top = 8.dp)) {
+            Text("显示第三个对话框")
         }
         Button(onClick = onClear, modifier = Modifier.padding(top = 8.dp)) {
             Text("清除所有对话框")

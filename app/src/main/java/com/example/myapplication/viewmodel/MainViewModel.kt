@@ -1,8 +1,8 @@
 package com.example.myapplication.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.example.dialogstack.DialogItem
-import com.example.dialogstack.DialogStack
+import io.github.dialogstack.DialogItem
+import io.github.dialogstack.DialogStack
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -25,6 +25,3 @@ class MainViewModel(
     }
 }
 
-val viewModelModule = module {
-    viewModelOf(::MainViewModel)
-}
